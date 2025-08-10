@@ -8,5 +8,5 @@ data class LateItem(
     val itemId: Long,
     val patronId: Long,
     val dueDate: String,
-    var freeInCents: Int,
+    var feeInCents: Int,
 )
