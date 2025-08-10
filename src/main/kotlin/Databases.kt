@@ -1,5 +1,6 @@
 package codes.kalar
 
+import codes.kalar.service.CollectionItemService
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.http.*
@@ -18,20 +19,6 @@ import java.sql.DriverManager
 
 fun Application.configureDatabases() {
     val dbConnection: Connection = connectToPostgres()
-
-    routing {
-        get("/database") {
-            var title = mutableListOf<String>()
-            // FUZZY SEARCH!!!!
-            val statement = dbConnection.prepareStatement("SELECT title FROM collection_item WHERE levenshtein(title, ?) <= 10 LIMIT 20")
-            statement.setString(1, "An Absolutely Remarkable Thing")
-            val resultSet = statement.executeQuery()
-            while (resultSet.next()) {
-                title.addLast(resultSet.getString("title") + "\n")
-            }
-            call.respond(title.toString() ?: "No data found")
-        }
-    }
 }
 
 /**
