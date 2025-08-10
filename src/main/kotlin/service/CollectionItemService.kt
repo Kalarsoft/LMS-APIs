@@ -25,7 +25,7 @@ class CollectionItemService(private val connection: Connection) {
         private const val ARCHIVE_ITEM_BY_ID = "UPDATE collection_item SET is_archived = true WHERE id = ?"
     }
 
-    suspend fun create(newCollectionItem: NewCollectionItem): Long {
+    fun create(newCollectionItem: NewCollectionItem): Long {
         val statement = connection.prepareStatement(INSERT_ITEM,
             Statement.RETURN_GENERATED_KEYS)
         statement.setString(1, newCollectionItem.title)
@@ -60,7 +60,7 @@ class CollectionItemService(private val connection: Connection) {
         }
     }
 
-    suspend fun readByTitle(inputTitle: String, offset: Int = 0): MutableList<String> {
+    fun readByTitle(inputTitle: String, offset: Int = 0): MutableList<String> {
         val itemList = mutableListOf<String>()
         // FUZZY SEARCH!!!!
         val statement = connection.prepareStatement(SELECT_ITEM_BY_TITLE)
@@ -80,7 +80,7 @@ class CollectionItemService(private val connection: Connection) {
         return itemList
     }
 
-    suspend fun readById(id: Long): CollectionItem {
+    fun readById(id: Long): CollectionItem {
         val statement = connection.prepareStatement(SELECT_ITEM_BY_ID)
         statement.setLong(1, id)
         try {
@@ -96,7 +96,7 @@ class CollectionItemService(private val connection: Connection) {
         }
     }
 
-    suspend fun update(collectionItem: CollectionItem): Boolean {
+    fun update(collectionItem: CollectionItem): Boolean {
         val statement = connection.prepareStatement(UPDATE_ITEM_BY_ID)
         try {
             statement.setString(1, collectionItem.title)
@@ -127,7 +127,7 @@ class CollectionItemService(private val connection: Connection) {
         }
     }
 
-    suspend fun delete(id: Long) {
+    fun delete(id: Long) {
         val statement = connection.prepareStatement(ARCHIVE_ITEM_BY_ID)
         try {
             statement.setLong(1, id)

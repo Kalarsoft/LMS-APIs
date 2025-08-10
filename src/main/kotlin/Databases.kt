@@ -1,8 +1,5 @@
 package codes.kalar
 
-import codes.kalar.service.CollectionItemService
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -17,9 +14,8 @@ import io.ktor.server.routing.*
 import java.sql.Connection
 import java.sql.DriverManager
 
-fun Application.configureDatabases() {
-    val dbConnection: Connection = connectToPostgres()
-}
+// Maybe will use in the future
+fun Application.configureDatabases() {}
 
 /**
  * Makes a connection to a Postgres database.
