@@ -8,6 +8,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.plugins.swagger.*
 import java.sql.Connection
 
 fun Application.configureRouting() {
@@ -25,6 +26,10 @@ fun Application.configureRouting() {
 
         get("/authenticate") {
             call.respondText(System.getenv("JWT_DOMAIN") ?: "You seem to be missing something")
+        }
+
+        swaggerUI(path = "swagger", swaggerFile = "src/main/resources/openapi/documentation.yaml") {
+            version = "3.1.0"
         }
     }
 }
