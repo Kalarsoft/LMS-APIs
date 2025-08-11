@@ -1,0 +1,243 @@
+get:
+  description: "Search for item in collection"
+  parameters:
+    - name: "title"
+      in: "path"
+      required: false
+      schema:
+        type: string
+      examples:
+        SingleWord:
+          value: "title=Annihilation"
+        MultiWord:
+          value: "title=The-Fellowship-of-the-Ring"
+    - name: "id"
+      in: "path"
+      required: false
+      schema:
+        type: string
+      example: id=27
+  responses:
+    "200":
+      description: "OK"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CollectionItem"
+    "400":
+      description: "Bad Request"
+    "404":
+      description: "Not Found"
+
+post:
+  description: "The method to add items to the collection."
+  requestBody:
+    description: "A JSON object that represents an item."
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "#/components/schemas/NewCollectionItem"
+  responses:
+    "200":
+      description: "OK"
+    "400":
+      description: "Bad Request"
+
+patch:
+  description: "The method to update an item."
+  requestBody:
+    description: "The JSON object that represents a modified item."
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "#/components/schemas/CollectionItem"
+  responses:
+    "200":
+      description: "OK"
+    "404":
+      description: "Not Found"
+
+delete:
+  description: "The method to soft delete an item."
+  parameters:
+    - name: "id"
+      in: "path"
+      required: false
+      schema:
+        type: string
+      example: id=27
+  responses:
+    "200":
+      description: "OK"
+
+components:
+  schemas:
+    CollectionItem:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+          description: "The unique ID of the item."
+          example: 27
+        title:
+          type: "string"
+          description: "The title of the item."
+          example: "The Fellowship of the Ring"
+        author:
+          type: "array"
+          description: "The creator(s) behind the media."
+          example: ["J.R.R. Tolkien"]
+        publisher:
+          type: "string"
+          description: "The company who published the media."
+          example: ""
+        publishingDate:
+          type: "string"
+          description: "The date the book was published in yyyy-MM-DD format. 9999-12-31 for unknown."
+          example: ""
+        locNumber:
+          type: "string"
+          description: "The Library of Congress categorization number."
+          example: ""
+        deweyDecimalNumber:
+          type: "string"
+          description: "The Dewey Decimal Number."
+          example: ""
+        isbn:
+          type: "integer"
+          format: "int64"
+          description: "The ISBN number assigned to the book. Also known as the barcode."
+          example: ""
+        sortTitle:
+          type: "string"
+          description: "The tite of the book with any articles moved to the end for sorting purposes."
+          example: "Fellowship of the Ring, The"
+        format:
+          type: "string"
+          description: "The format the media is in. E.g. book, magazine, dvd, 8-track, etc."
+          example: "book"
+        language:
+          type: "string"
+          description: "The two letter abbreviation of the language the media is in."
+          example: ""
+        pageCount:
+          type: "integer"
+          format: "int32"
+          description: "The number of pages the media has. 0 if not a book/magazine."
+        categories:
+          type: "array"
+          description: "A list of the subjects/categories the media falls into."
+          example: ["Fantasy", "High Fantasy", "Linguistics"]
+        description:
+          type: "string"
+          description: "A short synopsis or blurb about the media."
+          example: ""
+        priceInCents:
+          type: "integer"
+          format: "int32"
+          description: "The cost of the item, in cents. E.g. $20 is 2000."
+          example: ""
+        coverImageUri:
+          type: "string"
+          description: "The path to find the cover image for the item."
+          example: ""
+        isCheckedIn:
+          type: "boolean"
+          description: "A flag to show if the item is checked in (true) or checked out (false)."
+          example: true
+        isArchived:
+          type: "boolean"
+          description: "A flag to show if the item is 'deleted' (true) or still in circulation (false)."
+          example: false
+        isLost:
+          type: "boolean"
+          description: "A flag to show if the item is lost (true) or not yet lost (false)."
+          example: false
+        lostDate:
+          type: "string"
+          description: "A string representation of the date the item is updated to lost. yyyy-MM-DD. 9999-12-31 for not lost."
+          example: "9999-12-31"
+    NewCollectionItem:
+      type: "object"
+      properties:
+        title:
+          type: "string"
+          description: "The title of the item."
+          example: "The Fellowship of the Ring"
+        author:
+          type: "array"
+          description: "The creator(s) behind the media."
+          example: [ "J.R.R. Tolkien" ]
+        publisher:
+          type: "string"
+          description: "The company who published the media."
+          example: ""
+        publishingDate:
+          type: "string"
+          description: "The date the book was published in yyyy-MM-DD format. 9999-12-31 for unknown."
+          example: ""
+        locNumber:
+          type: "string"
+          description: "The Library of Congress categorization number."
+          example: ""
+        deweyDecimalNumber:
+          type: "string"
+          description: "The Dewey Decimal Number."
+          example: ""
+        isbn:
+          type: "integer"
+          format: "int64"
+          description: "The ISBN number assigned to the book. Also known as the barcode."
+          example: ""
+        sortTitle:
+          type: "string"
+          description: "The tite of the book with any articles moved to the end for sorting purposes."
+          example: "Fellowship of the Ring, The"
+        format:
+          type: "string"
+          description: "The format the media is in. E.g. book, magazine, dvd, 8-track, etc."
+          example: "book"
+        language:
+          type: "string"
+          description: "The two letter abbreviation of the language the media is in."
+          example: ""
+        pageCount:
+          type: "integer"
+          format: "int32"
+          description: "The number of pages the media has. 0 if not a book/magazine."
+        categories:
+          type: "array"
+          description: "A list of the subjects/categories the media falls into."
+          example: [ "Fantasy", "High Fantasy", "Linguistics" ]
+        description:
+          type: "string"
+          description: "A short synopsis or blurb about the media."
+          example: ""
+        priceInCents:
+          type: "integer"
+          format: "int32"
+          description: "The cost of the item, in cents. E.g. $20 is 2000."
+          example: ""
+        coverImageUri:
+          type: "string"
+          description: "The path to find the cover image for the item."
+          example: ""
+        isCheckedIn:
+          type: "boolean"
+          description: "A flag to show if the item is checked in (true) or checked out (false)."
+          example: true
+        isArchived:
+          type: "boolean"
+          description: "A flag to show if the item is 'deleted' (true) or still in circulation (false)."
+          example: false
+        isLost:
+          type: "boolean"
+          description: "A flag to show if the item is lost (true) or not yet lost (false)."
+          example: false
+        lostDate:
+          type: "string"
+          description: "A string representation of the date the item is updated to lost. yyyy-MM-DD. 9999-12-31 for not lost."
+          example: "9999-12-31"
