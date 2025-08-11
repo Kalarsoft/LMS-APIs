@@ -25,14 +25,13 @@ fun Application.configureCollectionItemRoutes(dbConnection: Connection) {
                 if (call.request.queryParameters["id"] != null) {
                     input = call.request.queryParameters["id"]!!.toLong()
                     item = itemService.readById(input)
-                    call.respond(item)
+                    call.respond(HttpStatusCode.OK, item)
                 } else if (call.request.queryParameters["title"] != null) {
                     input = call.request.queryParameters["title"]!!.replace("-", " ")
                     offset = call.request.queryParameters["offset"]?.toInt() ?: 0
                     items = itemService.readByTitle(input, offset)
-                    call.respond(items)
-                }
-                else {
+                    call.respond(HttpStatusCode.OK, items)
+                } else {
                     throw IllegalArgumentException("query parameter required")
                 }
             } catch(cause: DbElementNotFoundException) {
@@ -46,10 +45,10 @@ fun Application.configureCollectionItemRoutes(dbConnection: Connection) {
             try {
                 val item = call.receive<NewCollectionItem>()
                 val id = itemService.create(item)
-                call.respondText("Adding ${item.title} to database with the id of $id")
-            } catch (e: DbElementInsertionException) {
-                call.respond(HttpStatusCode.BadRequest, e.message ?: "Bad Arguments")
-            } catch (e: ContentTransformationException) {
+                call.respondText("Adding ${item.title} to database with the id of $id", status=HttpStatusCode.OK)
+            } catch (cause: DbElementInsertionException) {
+                call.respond(HttpStatusCode.BadRequest, cause.message ?: "Bad Arguments")
+            } catch (cause: ContentTransformationException) {
                 call.respond(HttpStatusCode.BadRequest, "Bad Arguments. Must pass a valid CollectionItem object.")
             }
 
@@ -60,17 +59,16 @@ fun Application.configureCollectionItemRoutes(dbConnection: Connection) {
                 val inputItem = call.receive<CollectionItem>()
                 itemService.readById(inputItem.id)
                 val result = itemService.update(inputItem)
-                call.respondText("Updated ${inputItem.title} to database: $result")
+                call.respondText("Updated ${inputItem.title} to database: $result", status=HttpStatusCode.OK)
             } catch (cause: DbElementNotFoundException) {
                 log.error(cause.message)
-                call.respond(HttpStatusCode.NotFound, "${cause.message}")
-            }
-            catch (cause: DbElementInsertionException) {
+                call.respond(HttpStatusCode.NotFound, cause.message ?: "Could not find item in database.")
+            } catch (cause: DbElementInsertionException) {
                 log.error(cause.message)
-                call.respond(HttpStatusCode.BadRequest, "${cause.message}")
+                call.respond(HttpStatusCode.BadRequest, cause.message ?: "Bad Arguments")
             } catch (cause: ContentTransformationException) {
                 log.error(cause.message)
-                call.respond(HttpStatusCode.BadRequest, "${cause.message}")
+                call.respond(HttpStatusCode.BadRequest, cause.message ?: "Bad Arguments")
             }
         }
 
@@ -79,11 +77,13 @@ fun Application.configureCollectionItemRoutes(dbConnection: Connection) {
                 val id = call.parameters["id"]!!.toLong()
                 log.info("Deleting item with id=$id")
                 itemService.delete(id)
-                call.respondText(":(")
+                call.respondText(":(", status = HttpStatusCode.OK)
             } catch (cause: DbElementNotFoundException) {
                 log.error(cause.message, cause)
+                call.respond(HttpStatusCode.BadRequest, cause.message ?: "Bad Arguments")
             } catch (cause: NumberFormatException) {
                 log.error(cause.message, cause)
+                call.respond(HttpStatusCode.BadRequest, cause.message ?: "Invalid ID format")
             }
         }
     }
