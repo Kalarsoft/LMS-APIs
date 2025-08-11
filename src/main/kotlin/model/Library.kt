@@ -8,3 +8,10 @@ data class Library(
     val name: String,
     val address: String,
 )
+
+@Serializable
+data class NewLibrary(
+    // ID to be inserted by Database
+    val name: String,
+    val address: String,
+)

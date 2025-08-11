@@ -9,3 +9,11 @@ data class Staff(
     val password: String?,
     val isArchived: Boolean,
 )
+
+@Serializable
+data class NewStaff(
+    // ID to be inserted by Database
+    val name: String,
+    val password: String?,
+    val isArchived: Boolean,
+)
