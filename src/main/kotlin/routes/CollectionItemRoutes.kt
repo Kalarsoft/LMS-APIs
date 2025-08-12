@@ -58,8 +58,8 @@ fun Application.configureCollectionItemRoutes(dbConnection: Connection) {
             try {
                 val inputItem = call.receive<CollectionItem>()
                 itemService.readById(inputItem.id)
-                val result = itemService.update(inputItem)
-                call.respondText("Updated ${inputItem.title} to database: $result", status=HttpStatusCode.OK)
+                itemService.update(inputItem)
+                call.respondText("Updated ${inputItem.title} to database.", status=HttpStatusCode.OK)
             } catch (cause: DbElementNotFoundException) {
                 log.error(cause.message)
                 call.respond(HttpStatusCode.NotFound, cause.message ?: "Could not find item in database.")
