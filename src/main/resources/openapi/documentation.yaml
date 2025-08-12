@@ -1,11 +1,12 @@
-openapi: 3.1.0
+openapi: 3.0.4
 info:
   title: "LMS APIs"
-  description: "Library Management System APIs"
+  description: "Public and Private Library Management System APIs"
   version: "0.0.1"
 servers:
   - url: "http://0.0.0.0:8080"
 paths:
+
   /items:
     get:
       description: "Search for item in collection"
@@ -24,16 +25,15 @@ paths:
             example: id=27
       responses:
         "200":
-          description: "OK"
+          description: "Depending on if an ID or title was used, single (ID) or list of (Title) CollectionItems is returned."
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CollectionItem"
+                $ref: "./endpoints/items.yaml#/components/schemas/CollectionItem"
         "400":
-          description: "Bad Request"
+          description: "Bad Request. Something was malformed or missing."
         "404":
-          description: "Not Found"
-
+          description: "No items were found using the provided information."
     post:
       description: "The method to add items to the collection."
       requestBody:
@@ -42,13 +42,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CollectionItem"
+              $ref: "#/components/schemas/NewCollectionItem"
       responses:
         "200":
-          description: "OK"
+          description: "A success message is returned."
         "400":
-          description: "Bad Request"
-
+          description: "Bad Request. Either the item failed to be inserted into the database, or something was wrong in the request."
     patch:
       description: "The method to update an item."
       requestBody:
@@ -60,26 +59,39 @@ paths:
               $ref: "#/components/schemas/CollectionItem"
       responses:
         "200":
-          description: "OK"
+          description: "A success message is returned."
         "400":
-          description: "Bad Request"
+          description: "Bad Request. Either the item failed to be updated in the database, or something was wrong in the request."
         "404":
-          description: "Not Found"
-
+          description: "No CollectionItem was found with the provided ID."
     delete:
       description: "The method to soft delete an item."
       parameters:
         - name: "id"
           in: "path"
-          required: false
+          required: true
+          schema:
+            type: string
+            example: id=27
+      responses:
+        "200":
+          description: "A (sad) success message is returned."
+        "400":
+          description: "Bad Request. Either the item failed to be deleted from the database, or something was wrong in the request."
+
+  /libraries:
+    get:
+      description: ""
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
           schema:
             type: string
             example: id=27
       responses:
         "200":
           description: "OK"
-        "400":
-          description: "Bad Request"
 
 components:
   schemas:
@@ -119,12 +131,12 @@ components:
           type: "integer"
           format: "int64"
           description: "The ISBN number assigned to the book. Also known as the barcode."
-          example: ""
+          example: 0
         sortTitle:
           type: "string"
-          description: "The tite of the book with any articles moved to the end for sorting purposes."
+          description: "The title of the book with any articles moved to the end for sorting purposes."
           example: "Fellowship of the Ring, The"
-        format:
+        "format":
           type: "string"
           description: "The format the media is in. E.g. book, magazine, dvd, 8-track, etc."
           example: "book"
@@ -136,6 +148,7 @@ components:
           type: "integer"
           format: "int32"
           description: "The number of pages the media has. 0 if not a book/magazine."
+          example: 450
         categories:
           type: "array"
           description: "A list of the subjects/categories the media falls into."
@@ -148,7 +161,7 @@ components:
           type: "integer"
           format: "int32"
           description: "The cost of the item, in cents. E.g. $20 is 2000."
-          example: ""
+          example: 4000
         coverImageUri:
           type: "string"
           description: "The path to find the cover image for the item."
@@ -200,19 +213,19 @@ components:
           type: "integer"
           format: "int64"
           description: "The ISBN number assigned to the book. Also known as the barcode."
-          example: ""
+          example: 0
         sortTitle:
           type: "string"
-          description: "The tite of the book with any articles moved to the end for sorting purposes."
+          description: "The title of the book with any articles moved to the end for sorting purposes."
           example: "Fellowship of the Ring, The"
-        format:
+        "format":
           type: "string"
           description: "The format the media is in. E.g. book, magazine, dvd, 8-track, etc."
           example: "book"
         language:
           type: "string"
           description: "The two letter abbreviation of the language the media is in."
-          example: ""
+          example: "en, el"
         pageCount:
           type: "integer"
           format: "int32"
@@ -224,16 +237,16 @@ components:
         description:
           type: "string"
           description: "A short synopsis or blurb about the media."
-          example: ""
+          example: "Super cool book about elves and humans and dwarves."
         priceInCents:
           type: "integer"
           format: "int32"
           description: "The cost of the item, in cents. E.g. $20 is 2000."
-          example: ""
+          example: 4000
         coverImageUri:
           type: "string"
           description: "The path to find the cover image for the item."
-          example: ""
+          example: "path/to/blob/cover.png"
         isCheckedIn:
           type: "boolean"
           description: "A flag to show if the item is checked in (true) or checked out (false)."
@@ -250,3 +263,109 @@ components:
           type: "string"
           description: "A string representation of the date the item is updated to lost. yyyy-MM-DD. 9999-12-31 for not lost."
           example: "9999-12-31"
+
+    Patron:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+          description: ""
+          example: 201
+        name:
+          type: "string"
+          description: ""
+          example: "Nick Kalar"
+        hasGoodStanding:
+          type: "string"
+          description: ""
+          example: true
+        feeTotal:
+          type: "integer"
+          format: "int64"
+          description: "The amount owed by the parton for late/lost books in cents"
+          example: 25
+        isArchived:
+          type: "boolean"
+          description: "A flag to denote a deleted or expired accounts. Accounts become archived if not used for a certain amount of time."
+          example: false
+        lastLogin:
+          type: "string"
+          description: "A string representation of the last time a user logged in. yyyy-MM-DD."
+          example: "2025-08-11"
+        password:
+          type: "string"
+          description: "The hashed password for the patron. This will only be stored in memory for as long as it is needed, then will be null."
+          example: "4bf94ee173fd60f5a2a01870390e27ae7b21acc21fe8c1ae66b3d29e4f1155d1"
+    NewPatron:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          description: ""
+          example: "Nick Kalar"
+        hasGoodStanding:
+          type: "string"
+          description: ""
+          example: true
+        feeTotal:
+          type: "integer"
+          format: "int64"
+          description: "The amount owed by the parton for late/lost books in cents"
+          example: 25
+        isArchived:
+          type: "boolean"
+          description: "A flag to denote a deleted or expired accounts. Accounts become archived if not used for a certain amount of time."
+          example: false
+        lastLogin:
+          type: "string"
+          description: "A string representation of the last time a user logged in. yyyy-MM-DD."
+          example: "2025-08-11"
+        password:
+          type: "string"
+          description: "The hashed password for the patron. This will only be stored in memory for as long as it is needed, then will be null."
+          example: "4bf94ee173fd60f5a2a01870390e27ae7b21acc21fe8c1ae66b3d29e4f1155d1"
+
+    Staff:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+          description: ""
+          example: 201
+    NewStaff:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          description: ""
+          example: "Nick Kalar"
+
+    Library:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+          description: ""
+          example: 1
+        name:
+          type: "string"
+          description: ""
+          example: "Berta Yero Fernandez Memorial Library"
+        address:
+          type: "string"
+          description: ""
+          example: "628 Arvin St. Bakersfield, Ca 93308"
+    NewLibrary:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          description: ""
+          example: "Berta Yero Fernandez Memorial Library"
+        address:
+          type: "string"
+          description: ""
+          example: "628 Arvin St. Bakersfield, Ca 93308"

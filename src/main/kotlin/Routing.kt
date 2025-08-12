@@ -29,7 +29,7 @@ fun Application.configureRouting() {
         }
 
         swaggerUI(path = "swagger", swaggerFile = "src/main/resources/openapi/documentation.yaml") {
-            version = "3.1.0"
+            version="5.27.1"
         }
     }
 }
