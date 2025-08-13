@@ -11,7 +11,6 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import java.sql.Connection
-import java.sql.SQLException
 
 fun Application.configureLibraryRoutes(dbConnection: Connection) {
     val libraryService = LibraryService(dbConnection)
@@ -19,9 +18,14 @@ fun Application.configureLibraryRoutes(dbConnection: Connection) {
     routing {
         get("/libraries") {
             try {
-                val id = call.parameters["id"]?.toLong() ?: throw IllegalArgumentException("query parameter required")
-                val library = libraryService.read(id)
-                call.respond(HttpStatusCode.OK, library.toString())
+                val id = call.parameters["id"]?.toLong()
+                if (id != null) {
+                    val library = libraryService.readLibraryById(id)
+                    call.respond(HttpStatusCode.OK, library)
+                } else {
+                    val libraries = libraryService.readAllLibraries()
+                    call.respond(HttpStatusCode.OK, libraries)
+                }
             } catch (cause: DbElementNotFoundException) {
                 call.respond(HttpStatusCode.BadRequest, cause.message ?: "Unable to find Library.")
             } catch (cause: IllegalArgumentException) {

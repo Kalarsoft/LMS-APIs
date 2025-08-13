@@ -4,15 +4,15 @@ import codes.kalar.exception.DbElementInsertionException
 import codes.kalar.exception.DbElementNotFoundException
 import codes.kalar.model.Library
 import codes.kalar.model.NewLibrary
-import kotlinx.serialization.json.Json
 import java.sql.*
 
 class LibraryService(private val connection: Connection) {
 
     companion object {
         private const val SELECT_LIBRARY_BY_ID = "SELECT * FROM library WHERE  id = ?"
+        private const val SELECT_ALL_LIBRARIES = "SELECT * FROM library"
         private const val SELECT_LIBRARY_ALL = "SELECT * FROM library ORDER BY id DESC LIMIT 25"
-        private const val INSERT_LIBRARY = "INSERT INTO library (name, address) VALUES (?, ?)"
+        private const val INSERT_LIBRARY = "INSERT INTO library (name, address, is_archived) VALUES (?, ?, ?)"
         private const val UPDATE_LIBRARY_BY_ID = ""
         // In the event  are "deleted" erroneously, having a flag set instead of actually removing the entry allows
         // for quick reversal.
@@ -23,6 +23,7 @@ class LibraryService(private val connection: Connection) {
         val statement = connection.prepareStatement(INSERT_LIBRARY, Statement.RETURN_GENERATED_KEYS)
         statement.setString(1, library.name)
         statement.setString(2, library.address)
+        statement.setBoolean(3, library.isArchived)
         try {
             statement.execute()
             val key = statement.generatedKeys
@@ -35,12 +36,12 @@ class LibraryService(private val connection: Connection) {
         }
     }
 
-    suspend fun read(id: Long): Library {
+    suspend fun readLibraryById(id: Long): Library {
         val statement = connection.prepareStatement(SELECT_LIBRARY_BY_ID)
         statement.setLong(1, id)
         try {
             val resultSet = statement.executeQuery()
-            if (resultSet.next() && resultSet.getBoolean("is_archived")) {
+            if (resultSet.next() && !resultSet.getBoolean("is_archived")) {
                 return createLibraryFromResult(resultSet)
             } else {
                 throw DbElementNotFoundException("Could not find collection item. resultSet: $resultSet")
@@ -48,6 +49,19 @@ class LibraryService(private val connection: Connection) {
         } catch(cause: SQLException) {
             throw DbElementNotFoundException("Could not find collection item with id $id")
         }
+    }
+
+    fun readAllLibraries(): List<Library> {
+        val libraries = ArrayList<Library>()
+        val statement = connection.prepareStatement(SELECT_ALL_LIBRARIES)
+        val resultSet = statement.executeQuery()
+        while (resultSet.next()) {
+            if (!resultSet.getBoolean("is_archived")) {
+                val library = createLibraryFromResult(resultSet)
+                libraries.add(library)
+            }
+        }
+        return libraries
     }
 
     suspend fun update(library: Library) {}
