@@ -7,6 +7,7 @@ data class Library(
     val id: Long,
     val name: String,
     val address: String,
+    val isArchived: Boolean,
 )
 
 @Serializable
@@ -14,4 +15,5 @@ data class NewLibrary(
     // ID to be inserted by Database
     val name: String,
     val address: String,
+    val isArchived: Boolean,
 )
