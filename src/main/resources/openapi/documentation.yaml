@@ -81,17 +81,31 @@ paths:
 
   /libraries:
     get:
-      description: ""
+      description: "Search for libraries based on ID or get all libraries"
       parameters:
         - name: "id"
           in: "path"
-          required: true
+          required: false
           schema:
             type: string
-            example: id=27
+            example: id=1
       responses:
         "200":
-          description: "OK"
+          description: "Either a single library, or a list of all libraries."
+        "400":
+          description: "Bad Request. Likely, the ID you are looking for doesn't exist."
+    post:
+      description: "The method to add a new library."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewLibrary"
+      responses:
+        "200":
+          description: "The ID of the newly created library will be returned."
+        "400":
+          description: "Bad Request. Unable to insert the new library."
 
 components:
   schemas:
