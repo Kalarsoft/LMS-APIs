@@ -113,7 +113,7 @@ components:
           example: ""
         sortTitle:
           type: "string"
-          description: "The tite of the book with any articles moved to the end for sorting purposes."
+          description: "The title of the book with any articles moved to the end for sorting purposes."
           example: "Fellowship of the Ring, The"
         format:
           type: "string"
@@ -194,7 +194,7 @@ components:
           example: ""
         sortTitle:
           type: "string"
-          description: "The tite of the book with any articles moved to the end for sorting purposes."
+          description: "The title of the book with any articles moved to the end for sorting purposes."
           example: "Fellowship of the Ring, The"
         format:
           type: "string"
