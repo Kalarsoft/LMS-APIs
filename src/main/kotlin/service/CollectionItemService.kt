@@ -86,7 +86,7 @@ class CollectionItemService(private val connection: Connection) {
         try {
             val resultSet = statement.executeQuery()
             // Only return non-archived books
-            if (resultSet.next() and !resultSet.getBoolean("is_archived")) {
+            if (resultSet.next() && !resultSet.getBoolean("is_archived")) {
                 return createItemFromResult(resultSet)
             } else {
                 throw DbElementNotFoundException("Could not find collection item. resultSet: $resultSet")
@@ -183,6 +183,6 @@ fun createItemFromResult(resultSet: ResultSet): CollectionItem {
             lostDate = lostDate.toString()
         )
     } catch (cause: NullPointerException) {
-        throw DbElementInsertionException("${cause.message}\nresultSet = ${resultSet.getMetaData()}")
+        throw DbElementInsertionException("${cause.message}\nresultSet = ${resultSet.metaData}")
     }
 }

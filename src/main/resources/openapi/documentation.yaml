@@ -29,7 +29,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "./endpoints/items.yaml#/components/schemas/CollectionItem"
+                $ref: "#/components/schemas/CollectionItem"
         "400":
           description: "Bad Request. Something was malformed or missing."
         "404":
